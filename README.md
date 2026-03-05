@@ -1,4 +1,39 @@
-# course-api
+# Course API
+
+REST API developed as part of a technical challenge using **Quarkus**.
+
+The application allows managing **courses and lessons** through a RESTful API with persistence using an H2 in-memory database.
+
+## Features
+
+- Full CRUD for courses
+- Create and list lessons associated with courses
+- Data validation using Bean Validation
+- Persistence using Hibernate ORM
+- H2 in-memory database
+- Layered architecture (Resource → Service → Entity → DTO)
+
+## Main Endpoints
+
+### Courses
+
+POST /courses  
+GET /courses  
+GET /courses/{id}  
+PUT /courses/{id}  
+DELETE /courses/{id}
+
+### Lessons
+
+POST /courses/{courseId}/lessons  
+GET /courses/{courseId}/lessons
+
+## Test Results
+
+Score obtained in the evaluation script:
+
+268 / 290 points  
+96.5% of required requirements satisfied
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
