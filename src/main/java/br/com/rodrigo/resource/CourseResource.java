@@ -12,6 +12,10 @@ import jakarta.ws.rs.core.*;
 import java.net.URI;
 import java.util.List;
 import br.com.rodrigo.entity.Lesson;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.Context;
 
 
 @Path("/courses")
@@ -23,6 +27,7 @@ public class CourseResource {
     CourseService service;
 
     @POST
+    @RolesAllowed("ADMIN")
     public Response create(@Valid CourseDTO courseDTO, @Context UriInfo uriInfo) {
 
         Course course = new Course();
@@ -38,12 +43,14 @@ public class CourseResource {
     }
 
     @GET
+    @PermitAll
     public List<Course> list() {
         return service.listAll();
     }
 
     @GET
     @Path("/{id}")
+    @PermitAll
     public Response find(@PathParam("id") Long id) {
 
         Course course = service.findById(id);
@@ -57,6 +64,7 @@ public class CourseResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed("ADMIN")
     public Response update(@PathParam("id") Long id, @Valid CourseDTO courseDTO) {
 
         Course updatedCourse = new Course();
@@ -73,6 +81,7 @@ public class CourseResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed("ADMIN")
     public Response delete(@PathParam("id") Long id) {
 
         boolean deleted = service.delete(id);
@@ -85,6 +94,7 @@ public class CourseResource {
     }
     @POST
     @Path("/{courseId}/lessons")
+    @RolesAllowed("ADMIN")
     public Response addLesson(@PathParam("courseId") Long courseId,
                               @Valid LessonDTO lessonDTO) {
 
@@ -102,6 +112,7 @@ public class CourseResource {
 
     @GET
     @Path("/{courseId}/lessons")
+    @PermitAll
     public Response listLessons(@PathParam("courseId") Long courseId) {
 
         List<Lesson> lessons = service.listLessons(courseId);
@@ -111,5 +122,14 @@ public class CourseResource {
         }
 
         return Response.ok(lessons).build();
+    }
+    @GET
+    @Path("/debug-auth")
+    @PermitAll
+    public Response debugAuth(@Context SecurityContext ctx) {
+        return Response.ok(
+                "User: " + ctx.getUserPrincipal() +
+                        " | Auth: " + ctx.isUserInRole("ADMIN")
+        ).build();
     }
 }
