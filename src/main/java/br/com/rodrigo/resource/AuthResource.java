@@ -9,11 +9,15 @@ import jakarta.ws.rs.core.Response;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
+
+    @ConfigProperty(name = "jwt.expiration")
+    long expiration;
 
     public static class AuthRequest {
         public String email;
@@ -46,11 +50,12 @@ public class AuthResource {
         String token = Jwt.issuer("course-api")
                 .subject(user.email)
                 .groups(roles)
-                .expiresIn(Duration.ofHours(1))
-                .signWithSecret("minha-chave-super-segura-com-mais-de-32-caracteres-123");
+                .expiresIn(Duration.ofSeconds(expiration))
+                .sign();
 
-        return Response.ok(new AuthResponse(token, 3600)).build();
+        return Response.ok(new AuthResponse(token, expiration)).build();
     }
+
     @GET
     @Path("/debug-users")
     public Response debug() {
