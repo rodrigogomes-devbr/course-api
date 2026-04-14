@@ -1,5 +1,6 @@
 package br.com.rodrigo.resource;
 
+import br.com.rodrigo.dto.UserDTO;
 import br.com.rodrigo.entity.User;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,20 +18,23 @@ public class UserResource {
 
     @POST
     @Transactional
-    public Response create(@Valid User user, @Context UriInfo uriInfo) {
+    public Response create(@Valid UserDTO dto, @Context UriInfo uriInfo) {
 
-        user.role = "USER"; // regra do projeto
-
-        // 🔥 valida email duplicado
-        User existingUser = User.find("email", user.email).firstResult();
-
+        // Verifica email duplicado
+        User existingUser = User.find("email", dto.email).firstResult();
         if (existingUser != null) {
             return Response.status(Response.Status.CONFLICT)
                     .entity("Email already exists")
                     .build();
         }
 
-        user.persist(); // ⭐ Panache
+        User user = new User();
+        user.name = dto.name;
+        user.email = dto.email;
+        user.password = dto.password;
+        user.role = "USER";
+
+        user.persist();
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path(user.id.toString())

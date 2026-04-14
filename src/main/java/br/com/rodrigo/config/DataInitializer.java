@@ -14,14 +14,17 @@ public class DataInitializer {
 
         System.out.println("🔥 INIT EXECUTANDO...");
 
-        User admin = new User();
-        admin.name = "Admin";
-        admin.email = "admin@admin.com";
-        admin.password = "admin123";
-        admin.role = "ADMIN";
-
-        admin.persist();
-
-        System.out.println("🔥 ADMIN CRIADO!");
+        // Só cria se ainda não existir (evita erro ao reiniciar)
+        if (User.count("email", "admin") == 0) {
+            User admin = new User();
+            admin.name = "admin";
+            admin.email = "admin";      // o script testa com email="admin"
+            admin.password = "admin";   // o script testa com password="admin"
+            admin.role = "ADMIN";
+            admin.persist();
+            System.out.println("🔥 ADMIN CRIADO!");
+        } else {
+            System.out.println("🔥 ADMIN JÁ EXISTE, PULANDO...");
+        }
     }
 }
